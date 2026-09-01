@@ -1,10 +1,84 @@
 {% extends "base.html" %} {% block title %}Dispositivos | EcoEnergy{% endblock %} {% block content %}
-<h1>Dispositivos</h1>
-<ul>
-    {% for dispositivo in dispositivos %}
-    <li>{{ dispositivo.nombre }} — {{ dispositivo.estado }}</li>
-    {% empty %}
-    <li>No existen dispositivos disponibles.</li>
-    {% endfor %}
-</ul>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Catálogo de dispositivos</h1>
+            <p class="text-muted mb-0">Resumen del inventario actual de EcoEnergy</p>
+        </div>
+    </div>
+
+    {% if dispositivos %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Total de dispositivos</p>
+                            <h3 class="mb-0">{{ total }}</h3>
+                        </div>
+                        <span class="badge bg-primary rounded-pill p-2">
+                            <i class="bi bi-hdd-stack"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Dispositivos activos</p>
+                            <h3 class="mb-0">{{ total_activos }}</h3>
+                        </div>
+                        <span class="badge bg-success rounded-pill p-2">
+                            <i class="bi bi-check-circle"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Consumo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dispositivo in dispositivos %}
+                        <tr>
+                            <td>{{ dispositivo.nombre }}</td>
+                            <td>
+                                {% if dispositivo.estado == "Activo" %}
+                                <span class="badge bg-success">{{ dispositivo.estado }}</span>
+                                {% elif dispositivo.estado == "Revisión" %}
+                                <span class="badge bg-warning text-dark">{{ dispositivo.estado }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ dispositivo.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ dispositivo.consumo_kwh }} kWh</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-light border text-center py-4" role="alert">
+        <h5 class="mb-2">No existen dispositivos disponibles.</h5>
+        <p class="mb-0 text-muted">No hay registros para mostrar en este momento.</p>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

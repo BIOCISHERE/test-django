@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "nombre": "Oficina Central",
+        "responsable": "Administración",
+        "estado": "Activo",
+        "consumo_promedio_kwh": 45.2
+    },
+    {
+        "id": 2,
+        "nombre": "Planta de Producción",
+        "responsable": "Operaciones",
+        "estado": "Revisión",
+        "consumo_promedio_kwh": 128.6
+    }
+]

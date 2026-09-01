@@ -1,16 +1,12 @@
 # Proyecto Integrado / EcoEnergy
 
-## Descripción
+## Descripción y objetivo
 
-Proyecto Django de backend para EcoEnergy, con una estructura inicial basada en la aplicación `dispositivos`. El proyecto incluye una vista de inicio, una vista de zonas y una vista de catálogo de dispositivos.
-
-## Objetivo
-
-Servir como base de desarrollo del backend del proyecto EcoEnergy, con navegación simple entre páginas y datos de ejemplo en contexto para comprobar el renderizado de plantillas.
+Proyecto Django para EcoEnergy con una estructura inicial orientada a la visualización de datos de ejemplo mediante plantillas. El repositorio incluye una página de inicio, una vista de zonas y un catálogo de dispositivos.
 
 ## Estructura del proyecto
 
-Los archivos verificados en el repositorio son:
+La estructura real del repositorio incluye los siguientes elementos:
 
 ```text
 .
@@ -20,11 +16,15 @@ Los archivos verificados en el repositorio son:
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
+├── data/
+│   ├── dispositivos.json
+│   └── zonas.json
 ├── dispositivos/
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py
+│   ├── services.py
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -39,30 +39,81 @@ Los archivos verificados en el repositorio son:
 ├── manage.py
 ├── README.md
 ├── requirements.txt
-└── .venv/
+├── .venv/
+└── ...
 ```
 
-## Plantillas del proyecto
+## Archivo JSON y estructura de datos
 
-La plantilla base se encuentra en `templates/base.html` y define la navegación principal:
+Los archivos JSON reales del proyecto se encuentran en la carpeta `data/`:
 
-- Inicio
-- Dispositivos
-- Zonas
+- `data/dispositivos.json`
+- `data/zonas.json`
 
-La navegación usa las rutas nombradas de Django:
+### `data/dispositivos.json`
 
-```django
-<a href="{% url 'dispositivos:inicio' %}">Inicio</a>
-<a href="{% url 'dispositivos:catalogo' %}">Dispositivos</a>
-<a href="{% url 'dispositivos:zonas' %}">Zonas</a>
+```json
+[
+    {
+        "id": 1,
+        "nombre": "Medidor inteligente",
+        "estado": "Activo",
+        "consumo_kwh": 18.4
+    },
+    {
+        "id": 2,
+        "nombre": "Climatizador",
+        "estado": "Revisión",
+        "consumo_kwh": 32.7
+    }
+]
 ```
 
-Las plantillas verificadas son:
+### `data/zonas.json`
 
-- `templates/dispositivos/inicio.html`
-- `templates/dispositivos/catalogo.html`
-- `templates/dispositivos/zonas.html`
+```json
+[
+    {
+        "id": 1,
+        "nombre": "Oficina Central",
+        "responsable": "Administración",
+        "estado": "Activo",
+        "consumo_promedio_kwh": 45.2
+    },
+    {
+        "id": 2,
+        "nombre": "Planta de Producción",
+        "responsable": "Operaciones",
+        "estado": "Revisión",
+        "consumo_promedio_kwh": 128.6
+    }
+]
+```
+
+## Función de carga de datos
+
+La carga de datos se realiza en `dispositivos/services.py`.
+
+```python
+import json
+from django.conf import settings
+
+def cargar_dispositivos():
+    ruta = settings.BASE_DIR / "data" / 'dispositivos.json'
+    with ruta.open(encoding="utf-8") as archivo:
+        datos = json.load(archivo)
+    if not isinstance(datos, list):
+        raise ValueError("Se esperaba una lista de dispositivos")
+    return datos
+
+def cargar_zonas():
+    ruta = settings.BASE_DIR / "data" / 'zonas.json'
+    with ruta.open(encoding="utf-8") as archivo:
+        datos = json.load(archivo)
+    if not isinstance(datos, list):
+        raise ValueError("Se esperaba una lista de zonas")
+    return datos
+```
 
 ## Rutas funcionales
 
@@ -91,48 +142,34 @@ urlpatterns = [
 - `/zonas/` → vista de zonas
 - `/dispositivos/` → vista de catálogo de dispositivos
 
-## Claves de contexto
+## Dependencia externa
 
-Las vistas verificadas en `dispositivos/views.py` envían estas claves a las plantillas:
+El proyecto incluye la dependencia `django-bootstrap5` en `requirements.txt`:
 
-### `inicio`
-
-```python
-contexto = {
-    "sistema": "EcoEnergy",
-    "mensaje": "Monitoreo energético responsable",
-    "asignatura": "Programación Back End",
-}
+```text
+django-bootstrap5==26.3
 ```
 
-### `zonas`
+### Justificación y prueba
 
-```python
-{"zonas": [
-    {"nombre": "Oficina Central", "responsable": "Área de Administración"},
-    {"nombre": "Planta de Producción", "responsable": "Área de Operaciones"},
-    {"nombre": "Bodega", "responsable": "Área de Logística"},
-]}
+La dependencia está siendo usada en la plantilla base `templates/base.html`:
+
+```django
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 ```
 
-### `catalogo`
-
-```python
-{"dispositivos": [
-    {"nombre": "Medidor inteligente", "estado": "Activo"},
-    {"nombre": "Sensor de temperatura", "estado": "Activo"},
-    {"nombre": "Climatizador", "estado": "Revisión"},
-]}
-```
+Esto confirma que la biblioteca Bootstrap 5 de Django está integrada en la interfaz. La evidencia del proyecto es que `requirements.txt` contiene la dependencia y la plantilla usa sus etiquetas de carga y renderizado.
 
 ## Requisitos previos
 
 - Python
 - `pip`
 - Git
-- Entorno virtual (`.venv`)
+- Entorno virtual `.venv`
 
-## Instalación y ejecución
+## Instalación desde `requirements.txt`
 
 Desde la raíz del proyecto:
 
@@ -143,39 +180,19 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Verificación de configuración Django:
+## Verificación
+
+Se comprobó la configuración del proyecto y la resolución de rutas con estos comandos:
 
 ```bash
 python manage.py check
 ```
 
-Arranque del servidor de desarrollo:
-
-```bash
-python manage.py runserver
-```
-
-## Prueba de navegación
-
-Se comprobó que las rutas nombradas de Django se resuelven correctamente y que la estructura de navegación está definida en la plantilla base.
-
-### Navegación esperada
-
-1. Abrir `http://127.0.0.1:8000/`
-2. Comprobar que aparece la página de inicio con el texto de contexto
-3. Usar el menú para acceder a:
-    - `http://127.0.0.1:8000/dispositivos/`
-    - `http://127.0.0.1:8000/zonas/`
-
-### Verificación de rutas por nombre
-
-Se ejecutó esta comprobación en el proyecto:
-
 ```bash
 python manage.py shell -c "from django.urls import reverse; print(reverse('dispositivos:inicio')); print(reverse('dispositivos:catalogo')); print(reverse('dispositivos:zonas'))"
 ```
 
-Resultado verificado:
+### Resultado verificado
 
 - `reverse('dispositivos:inicio')` → `/`
 - `reverse('dispositivos:catalogo')` → `/dispositivos/`
@@ -183,11 +200,10 @@ Resultado verificado:
 
 ## Estado actual
 
-El proyecto se encuentra en una etapa inicial de desarrollo con configuración base de Django y una navegación simple entre páginas. Los datos mostrados en las vistas son datos de ejemplo definidos directamente en `dispositivos/views.py`.
+El proyecto está en una etapa inicial de desarrollo con Django, navegación básica y carga de datos desde archivos JSON locales. La lógica actual no usa base de datos todavía y los datos mostrados son datos de ejemplo.
 
 ## Próximos pasos
 
-- Definir modelos y persistencia de datos reales.
+- Definir modelos y persistencia de datos.
 - Ampliar la lógica de negocio de la aplicación `dispositivos`.
-- Añadir más templates y rutas según el alcance del proyecto.
-- Revisar la configuración para entornos de desarrollo y producción.
+- Revisar la configuración para un entorno más completo de desarrollo y despliegue.

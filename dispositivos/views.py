@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from dispositivos.services import cargar_dispositivos, cargar_zonas
 
 # Create your views here.
 def inicio(request):
@@ -15,25 +16,31 @@ def inicio(request):
     )
 
 def zonas(request):
-    zonas = [
-        {"nombre": "Oficina Central", "responsable": "Área de Administración"},
-        {"nombre": "Planta de Producción", "responsable": "Área de Operaciones"},
-        {"nombre": "Bodega", "responsable": "Área de Logística"},
-    ]
-    return render (
-        request,
-        "dispositivos/zonas.html",
-        {"zonas": zonas}
+    zonas = cargar_zonas()
+    activos = sum(
+        1 for item in zonas
+        if item["estado"] == "Activo"
+    )
+    contexto = {
+        "zonas": zonas,
+        "total": len(zonas),
+        "total_activos": activos
+    }
+    return render(
+        request, "dispositivos/zonas.html", contexto
     )
 
 def catalogo(request):
-    dispositivos = [
-        {"nombre": "Medidor inteligente", "estado": "Activo"},
-        {"nombre": "Sensor de temperatura", "estado": "Activo"},
-        {"nombre": "Climatizador", "estado": "Revisión"},
-    ]
+    dispositivos = cargar_dispositivos()
+    activos = sum(
+        1 for item in dispositivos
+        if item["estado"] == "Activo"
+    )
+    contexto = {
+        "dispositivos": dispositivos,
+        "total": len(dispositivos),
+        "total_activos": activos,
+    }
     return render(
-        request,
-        "dispositivos/catalogo.html",
-        {"dispositivos": dispositivos},
+        request, "dispositivos/catalogo.html", contexto
     )

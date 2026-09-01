@@ -1,10 +1,86 @@
 {% extends "base.html" %} {% block title %}Zonas | EcoEnergy{% endblock %} {% block content %}
-<h1>Zonas</h1>
-<ul>
-    {% for zona in zonas %}
-    <li>{{ zona.nombre }} — {{ zona.responsable }}</li>
-    {% empty %}
-    <li>No existen zonas disponibles.</li>
-    {% endfor %}
-</ul>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Zonas</h1>
+            <p class="text-muted mb-0">Resumen del estado operativo por zona</p>
+        </div>
+    </div>
+
+    {% if zonas %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Total de zonas</p>
+                            <h3 class="mb-0">{{ total }}</h3>
+                        </div>
+                        <span class="badge bg-primary rounded-pill p-2">
+                            <i class="bi bi-geo-alt"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1">Zonas activas</p>
+                            <h3 class="mb-0">{{ total_activos }}</h3>
+                        </div>
+                        <span class="badge bg-success rounded-pill p-2">
+                            <i class="bi bi-check-circle"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Responsable</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Consumo promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zona in zonas %}
+                        <tr>
+                            <td>{{ zona.nombre }}</td>
+                            <td>{{ zona.responsable }}</td>
+                            <td>
+                                {% if zona.estado == "Activo" %}
+                                <span class="badge bg-success">{{ zona.estado }}</span>
+                                {% elif zona.estado == "Revisión" %}
+                                <span class="badge bg-warning text-dark">{{ zona.estado }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ zona.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ zona.consumo_promedio_kwh }} kWh</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-light border text-center py-4" role="alert">
+        <h5 class="mb-2">No existen zonas disponibles.</h5>
+        <p class="mb-0 text-muted">No hay registros para mostrar en este momento.</p>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
